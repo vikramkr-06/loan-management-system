@@ -1,0 +1,316 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-users me-2"></i>All Users</h3>
+                <div>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+                        <i class="fas fa-home me-1"></i> Dashboard
+                    </a>
+                    <button id="exportBtn" class="btn btn-success ms-2">
+                        <i class="fas fa-download me-1"></i> Export CSV
+                    </button>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Search and Filter Section -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                            <input type="text" id="searchInput" class="form-control" placeholder="Search by name, email, or mobile...">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All AI Status</option>
+                            <option value="Eligible">Eligible</option>
+                            <option value="Not Eligible">Not Eligible</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Conditional">Conditional</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="d-flex align-items-center">
+                            <span class="badge bg-primary fs-6">
+                                Total: {{ users|length }} users
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                {% if users %}
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="usersTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Applicant Name</th>
+                                <th>Mobile No.</th>
+                                <th>Email</th>
+                                <th>Loan Amount</th>
+                                <th>Tenure</th>
+                                <th>Documents</th>
+                                <th>Completeness</th>
+                                <th>AI Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for user in users %}
+                            <tr class="user-row">
+                                <td>{{ user.id }}</td>
+                                <td>
+                                    <strong>{{ user.applicant_name }}</strong>
+                                    {% if user.designation %}
+                                    <br><small class="text-muted">{{ user.designation }}</small>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if user.mobile_no %}
+                                    <i class="fas fa-phone me-1"></i>{{ user.mobile_no }}
+                                    {% else %}
+                                    <span class="text-muted">-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <i class="fas fa-envelope me-1"></i>
+                                    <a href="mailto:{{ user.email_id }}" class="text-decoration-none">
+                                        {{ user.email_id }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success">₹{{ "%.2f"|format(user.loan_amount) }}</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ user.tenure }} months</span>
+                                </td>
+                                <td>
+                                    {% if user.document_count > 0 %}
+                                        <span class="badge bg-success" title="{{ user.document_count }} documents">
+                                            <i class="fas fa-file me-1"></i>{{ user.document_count }}
+                                        </span>
+                                    {% else %}
+                                        <span class="badge bg-warning" title="No documents">
+                                            <i class="fas fa-file-exclamation me-1"></i>0
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="progress" style="height: 20px; width: 100px;">
+                                        <div class="progress-bar bg-{{ 'success' if user.completeness_score >= 80 else 'warning' if user.completeness_score >= 50 else 'danger' }}" 
+                                             style="width: {{ user.completeness_score }}%"
+                                             title="{{ user.completeness_score }}% Complete">
+                                            {{ user.completeness_score }}%
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    {% if user.has_analysis %}
+                                        {% if user.ai_status == 'Eligible' %}
+                                            <span class="badge bg-success" title="AI Eligible">
+                                                <i class="fas fa-check"></i> Eligible
+                                            </span>
+                                        {% elif user.ai_status == 'Not Eligible' %}
+                                            <span class="badge bg-danger" title="AI Not Eligible">
+                                                <i class="fas fa-times"></i> Not Eligible
+                                            </span>
+                                        {% elif user.ai_status == 'Conditional' %}
+                                            <span class="badge bg-warning" title="AI Conditional">
+                                                <i class="fas fa-exclamation"></i> Conditional
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-secondary" title="{{ user.ai_status }}">
+                                                <i class="fas fa-clock"></i> {{ user.ai_status }}
+                                            </span>
+                                        {% endif %}
+                                        {% if user.risk_level %}
+                                        <br>
+                                        <small class="text-muted">Risk: {{ user.risk_level }}</small>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge bg-secondary" title="No AI Analysis">
+                                            <i class="fas fa-question"></i> Pending
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="{{ url_for('view_user', user_id=user.id) }}" 
+                                           class="btn btn-info btn-sm" 
+                                           title="View Details">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                        <a href="{{ url_for('run_analysis', user_id=user.id) }}" 
+                                           class="btn btn-warning btn-sm" 
+                                           title="Run AI Analysis">
+                                            <i class="fas fa-robot"></i>
+                                        </a>
+                                        <button type="button" class="btn btn-danger btn-sm" title="Delete" disabled>
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <div class="text-muted">
+                        Showing <strong id="showingCount">{{ users|length }}</strong> of <strong>{{ users|length }}</strong> users
+                    </div>
+                    <nav>
+                        <ul class="pagination" id="pagination">
+                            <!-- Pagination will be generated by JavaScript -->
+                        </ul>
+                    </nav>
+                </div>
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Users Found</h4>
+                    <p class="text-muted">Get started by creating your first user.</p>
+                    <a href="{{ url_for('create_user') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> Create First User
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.getElementById('searchInput');
+    const statusFilter = document.getElementById('statusFilter');
+    const userRows = document.querySelectorAll('.user-row');
+    const showingCount = document.getElementById('showingCount');
+    
+    function filterUsers() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const statusValue = statusFilter.value;
+        let visibleCount = 0;
+        
+        userRows.forEach(row => {
+            const name = row.cells[1].textContent.toLowerCase();
+            const mobile = row.cells[2].textContent.toLowerCase();
+            const email = row.cells[3].textContent.toLowerCase();
+            const aiStatus = row.cells[8].textContent.toLowerCase();
+            
+            const matchesSearch = name.includes(searchTerm) || 
+                                mobile.includes(searchTerm) || 
+                                email.includes(searchTerm);
+            
+            const matchesStatus = statusValue === '' || 
+                                aiStatus.includes(statusValue.toLowerCase());
+            
+            if (matchesSearch && matchesStatus) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+        
+        showingCount.textContent = visibleCount;
+    }
+    
+    searchInput.addEventListener('input', filterUsers);
+    statusFilter.addEventListener('change', filterUsers);
+    
+    // Export to CSV functionality
+    document.getElementById('exportBtn').addEventListener('click', function() {
+        const headers = ['ID', 'Applicant Name', 'Mobile No', 'Email', 'Loan Amount', 'Tenure', 'AI Status', 'Risk Level'];
+        const csvContent = [
+            headers.join(','),
+            ...Array.from(userRows).map(row => {
+                if (row.style.display !== 'none') {
+                    const cells = row.cells;
+                    const aiStatusCell = cells[8];
+                    const aiStatus = aiStatusCell.querySelector('.badge')?.textContent.trim() || 'Pending';
+                    const riskLevel = aiStatusCell.querySelector('.text-muted')?.textContent.replace('Risk: ', '') || '';
+                    
+                    return [
+                        cells[0].textContent,
+                        `"${cells[1].textContent.replace('"', '""')}"`,
+                        cells[2].textContent,
+                        cells[3].textContent,
+                        cells[4].textContent.replace('₹', '').trim(),
+                        cells[5].textContent.replace('months', '').trim(),
+                        aiStatus,
+                        riskLevel
+                    ].join(',');
+                }
+                return null;
+            }).filter(row => row !== null)
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = 'users_export.csv';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    });
+    
+    // Simple pagination
+    function initPagination() {
+        const rowsPerPage = 10;
+        const totalPages = Math.ceil(userRows.length / rowsPerPage);
+        const pagination = document.getElementById('pagination');
+        
+        if (totalPages <= 1) return;
+        
+        for (let i = 1; i <= totalPages; i++) {
+            const li = document.createElement('li');
+            li.className = 'page-item';
+            li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+            li.addEventListener('click', (e) => {
+                e.preventDefault();
+                showPage(i);
+            });
+            pagination.appendChild(li);
+        }
+        
+        showPage(1);
+    }
+    
+    function showPage(page) {
+        const rowsPerPage = 10;
+        const start = (page - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        
+        userRows.forEach((row, index) => {
+            if (index >= start && index < end && row.style.display !== 'none') {
+                row.style.display = '';
+            } else if (row.style.display !== 'none') {
+                row.style.display = 'none';
+            }
+        });
+        
+        // Update active page
+        document.querySelectorAll('.page-item').forEach((item, index) => {
+            item.classList.toggle('active', index === page - 1);
+        });
+    }
+    
+    if (userRows.length > 0) {
+        initPagination();
+    }
+});
+</script>
+{% endblock %}

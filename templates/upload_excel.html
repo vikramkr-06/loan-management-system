@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header">
+                <h3>Upload Excel File</h3>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Excel File Format Requirements:</strong><br>
+                    Your Excel file must contain these columns (required columns marked with *):<br>
+                    <strong>* Applicant Name, * Email ID, * Loan Amount, * Tenure</strong><br><br>
+                    
+                    <strong>Optional Columns:</strong><br>
+                    Applicant Spouse Name, Applicant Mother Name, Current Address, Mobile No, Children,<br>
+                    Qualification, Office Address, Office Landline No, Official Email ID, Job Since,<br>
+                    Total Experience, Department, Designation, Investment Details, Property Address,<br>
+                    Type, Property Pincode, Property Carpet Area, Sale Deed Amount,<br>
+                    Reference 1 Name, Reference 1 Mobile Number, Reference 1 Email ID, Reference 1 Address,<br>
+                    Reference 2 Name, Reference 2 Mobile Number, Reference 2 Email ID, Reference 2 Address,<br>
+                    Considering Co-Applicant Income, Co-Applicant Name, Co-Applicant Spouse Name,<br>
+                    Co-Applicant Mother Name, Co-Applicant Mobile Number, Co-Applicant Current Address,<br>
+                    Co-Applicant Email ID, Co-Applicant Qualification
+                </div>
+                
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="file" class="form-label">Select Excel File</label>
+                        <input type="file" class="form-control" id="file" name="file" accept=".xlsx,.xls" required>
+                        <div class="form-text">Only .xlsx and .xls files are allowed</div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Upload File</button>
+                    <a href="{{ url_for('create_user') }}" class="btn btn-secondary">Back</a>
+                </form>
+
+                <div class="mt-4">
+                    <h5>Sample Excel Format:</h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Applicant Name*</th>
+                                    <th>Email ID*</th>
+                                    <th>Loan Amount*</th>
+                                    <th>Tenure*</th>
+                                    <th>Mobile No</th>
+                                    <th>Department</th>
+                                    <th>Designation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>John Doe</td>
+                                    <td>john@example.com</td>
+                                    <td>500000</td>
+                                    <td>36</td>
+                                    <td>9876543210</td>
+                                    <td>IT</td>
+                                    <td>Software Engineer</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

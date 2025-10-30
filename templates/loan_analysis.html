@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-chart-line me-2"></i>AI Loan Analysis - {{ user.applicant_name }}</h3>
+                <div>
+                    <a href="{{ url_for('view_user', user_id=user.id) }}" class="btn btn-secondary">
+                        <i class="fas fa-user me-1"></i> User Details
+                    </a>
+                    <a href="{{ url_for('run_analysis', user_id=user.id) }}" class="btn btn-primary ms-2">
+                        <i class="fas fa-sync me-1"></i> Re-run Analysis
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                {% if analysis %}
+                <!-- Eligibility Status -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card bg-{{ 'success' if analysis.eligibility_status == 'Eligible' else 'danger' if analysis.eligibility_status == 'Not Eligible' else 'warning' }}">
+                            <div class="card-body text-center text-white">
+                                <h1 class="display-4">
+                                    {% if analysis.eligibility_status == 'Eligible' %}
+                                        ✅ ELIGIBLE
+                                    {% elif analysis.eligibility_status == 'Not Eligible' %}
+                                        ❌ NOT ELIGIBLE
+                                    {% else %}
+                                        ⚠️ {{ analysis.eligibility_status.upper() }}
+                                    {% endif %}
+                                </h1>
+                                <p class="lead mb-0">AI Loan Eligibility Decision</p>
+                                <small>Analyzed on: {{ analysis.analysis_date[:16] }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics -->
+                <div class="row mb-4">
+                    {% if analysis.foir_calculated %}
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-{{ 'success' if analysis.foir_calculated <= 60 else 'warning' if analysis.foir_calculated <= 80 else 'danger' }}">
+                                    {{ "%.1f"|format(analysis.foir_calculated * 100) }}%
+                                </h3>
+                                <small class="text-muted">FOIR Ratio</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% if analysis.ltv_calculated %}
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-{{ 'success' if analysis.ltv_calculated <= 75 else 'warning' if analysis.ltv_calculated <= 90 else 'danger' }}">
+                                    {{ "%.1f"|format(analysis.ltv_calculated) }}%
+                                </h3>
+                                <small class="text-muted">LTV Ratio</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3 class="text-{{ 'success' if analysis.risk_level == 'Low' else 'warning' if analysis.risk_level == 'Medium' else 'danger' }}">
+                                    {{ analysis.risk_level or 'N/A' }}
+                                </h3>
+                                <small class="text-muted">Risk Level</small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card text-center">
+                            <div class="card-body">
+                                <h3>₹{{ "%.2f"|format(user.loan_amount) }}</h3>
+                                <small class="text-muted">Loan Amount</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analysis Summary -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Analysis Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>{{ analysis.ai_summary or 'No summary available' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0"><i class="fas fa-question-circle me-2"></i>Key Reasons</h5>
+                            </div>
+                            <div class="card-body">
+                                {% if analysis.ai_queries %}
+                                <ul>
+                                    {% for reason in analysis.ai_queries.split('\n') %}
+                                    {% if reason.strip() %}
+                                    <li>{{ reason }}</li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                                {% else %}
+                                <p class="text-muted">No specific reasons provided</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                {% if analysis.recommendation %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Recommendations</h5>
+                            </div>
+                            <div class="card-body">
+                                <ul>
+                                    {% for rec in analysis.recommendation.split('\n') %}
+                                    {% if rec.strip() %}
+                                    <li>{{ rec }}</li>
+                                    {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="fas fa-chart-bar fa-4x text-muted mb-3"></i>
+                    <h4 class="text-muted">No Analysis Available</h4>
+                    <p class="text-muted">Run AI analysis to get loan eligibility assessment</p>
+                    <a href="{{ url_for('run_analysis', user_id=user.id) }}" class="btn btn-primary">
+                        <i class="fas fa-robot me-1"></i> Run AI Analysis
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

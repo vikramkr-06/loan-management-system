@@ -1,0 +1,680 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+  <div class="col-12">
+    <div class="card">
+      <!-- Completeness Score Card -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="card bg-light">
+            <div class="card-body">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <h5 class="card-title mb-1">Profile Completeness</h5>
+                  <p class="card-text text-muted mb-0">
+                    This profile is {{ completeness_score }}% complete
+                  </p>
+                </div>
+                <div class="col-md-4">
+                  <div class="progress" style="height: 30px">
+                    <div
+                      class="progress-bar bg-{{ 'success' if completeness_score >= 80 else 'warning' if completeness_score >= 50 else 'danger' }} 
+                                                progress-bar-striped progress-bar-animated"
+                      style="width: {{ completeness_score }}%"
+                    >
+                      <strong>{{ completeness_score }}%</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h3><i class="fas fa-user me-2"></i>User Details</h3>
+        <div>
+          <a href="{{ url_for('all_users') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-1"></i> Back to All Users
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <!-- Applicant Details -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-id-card me-2"></i>Applicant Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Applicant Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.applicant_name }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Spouse Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.applicant_spouse_name or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Mother Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.applicant_mother_name or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email ID</label>
+                    <p class="form-control-plaintext">
+                      <i class="fas fa-envelope me-1"></i>
+                      <a href="mailto:{{ user.email_id }}"
+                        >{{ user.email_id }}</a
+                      >
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Mobile No.</label>
+                    <p class="form-control-plaintext">
+                      <i class="fas fa-phone me-1"></i>
+                      {{ user.mobile_no or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Current Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.current_address or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Children</label>
+                    <p class="form-control-plaintext">
+                      {{ user.children or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Qualification</label>
+                    <p class="form-control-plaintext">
+                      {{ user.qualification or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Job Since</label>
+                    <p class="form-control-plaintext">
+                      {{ user.job_since or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-3 mb-3">
+                    <label class="form-label fw-bold">Total Experience</label>
+                    <p class="form-control-plaintext">
+                      {{ user.total_experience or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Professional Details -->
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header bg-info text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-briefcase me-2"></i>Professional Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Department</label>
+                    <p class="form-control-plaintext">
+                      {{ user.department or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Designation</label>
+                    <p class="form-control-plaintext">
+                      {{ user.designation or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Office Landline</label>
+                    <p class="form-control-plaintext">
+                      {{ user.office_landline or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Office Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.office_address or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Official Email ID</label>
+                    <p class="form-control-plaintext">
+                      {% if user.official_email_id %}
+                      <a href="mailto:{{ user.official_email_id }}"
+                        >{{ user.official_email_id }}</a
+                      >
+                      {% else %} Not provided {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loan & Property Details -->
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-success text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-money-bill-wave me-2"></i>Loan Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Loan Amount</label>
+                    <p class="form-control-plaintext fs-5 text-success">
+                      ₹{{ "%.2f"|format(user.loan_amount) }}
+                    </p>
+                  </div>
+                  <div class="col-6 mb-3">
+                    <label class="form-label fw-bold">Tenure</label>
+                    <p class="form-control-plaintext fs-5">
+                      {{ user.tenure }} months
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Investment Details</label>
+                    <p class="form-control-plaintext">
+                      {{ user.investment_details or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                  <i class="fas fa-home me-2"></i>Property Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Property Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.property_address or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Type</label>
+                    <p class="form-control-plaintext">
+                      {{ user.property_type or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Pincode</label>
+                    <p class="form-control-plaintext">
+                      {{ user.property_pincode or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Carpet Area</label>
+                    <p class="form-control-plaintext">
+                      {{ user.property_carpet_area or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Sale Deed Amount</label>
+                    <p class="form-control-plaintext">
+                      {% if user.sale_deed_amount %} ₹{{
+                      "%.2f"|format(user.sale_deed_amount) }} {% else %} Not
+                      provided {% endif %}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Co-Applicant Details -->
+        {% if user.has_co_applicant %}
+        <div class="row mb-4">
+          <div class="col-12">
+            <div class="card">
+              <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-users me-2"></i>Co-Applicant Details
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Co-Applicant Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_name or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Spouse Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_spouse_name or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Mother Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_mother_name or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Mobile Number</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_mobile or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Email ID</label>
+                    <p class="form-control-plaintext">
+                      {% if user.co_applicant_email %}
+                      <a href="mailto:{{ user.co_applicant_email }}"
+                        >{{ user.co_applicant_email }}</a
+                      >
+                      {% else %} Not provided {% endif %}
+                    </p>
+                  </div>
+                  <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">Qualification</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_qualification or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Current Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.co_applicant_address or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- References -->
+        <div class="row">
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-user-friends me-2"></i>Reference 1
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref1_name or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Mobile</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref1_mobile or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email</label>
+                    <p class="form-control-plaintext">
+                      {% if user.ref1_email %}
+                      <a href="mailto:{{ user.ref1_email }}"
+                        >{{ user.ref1_email }}</a
+                      >
+                      {% else %} Not provided {% endif %}
+                    </p>
+                  </div>
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref1_address or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="card h-100">
+              <div class="card-header bg-dark text-white">
+                <h5 class="mb-0">
+                  <i class="fas fa-user-friends me-2"></i>Reference 2
+                </h5>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Name</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref2_name or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Mobile</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref2_mobile or 'Not provided' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">Email</label>
+                    <p class="form-control-plaintext">
+                      {% if user.ref2_email %}
+                      <a href="mailto:{{ user.ref2_email }}"
+                        >{{ user.ref2_email }}</a
+                      >
+                      {% else %} Not provided {% endif %}
+                    </p>
+                  </div>
+                  <div class="col-12 mb-3">
+                    <label class="form-label fw-bold">Address</label>
+                    <p class="form-control-plaintext">
+                      {{ user.ref2_address or 'Not provided' }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Replace the AI Analysis section in user_details.html with this -->
+
+        <!-- AI Analysis Section -->
+        <div class="row mt-4">
+          <div class="col-12">
+            <div class="card">
+              <div
+                class="card-header d-flex justify-content-between align-items-center bg-info text-white"
+              >
+                <h5 class="mb-0">
+                  <i class="fas fa-robot me-2"></i>AI Loan Eligibility Analysis
+                </h5>
+                <div>
+                  {% if user.has_analysis %}
+                  <a
+                    href="{{ url_for('view_loan_analysis', user_id=user.id) }}"
+                    class="btn btn-light btn-sm"
+                  >
+                    <i class="fas fa-chart-line me-1"></i> View Analysis
+                  </a>
+                  {% endif %}
+                  <a
+                    href="{{ url_for('run_analysis', user_id=user.id) }}"
+                    class="btn btn-warning btn-sm ms-1"
+                  >
+                    <i class="fas fa-sync me-1"></i> Run Analysis
+                  </a>
+                </div>
+              </div>
+              <div class="card-body">
+                {% if user.has_analysis %}
+                <div class="row">
+                  <div class="col-md-4 text-center">
+                    <h4
+                      class="text-{{ 'success' if user.ai_status == 'Eligible' else 'danger' if user.ai_status == 'Not Eligible' else 'warning' }}"
+                    >
+                      {{ user.ai_status }}
+                    </h4>
+                    <small class="text-muted">Eligibility Status</small>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <h4
+                      class="text-{{ 'success' if user.risk_level == 'Low' else 'warning' if user.risk_level == 'Medium' else 'danger' }}"
+                    >
+                      {{ user.risk_level or 'N/A' }}
+                    </h4>
+                    <small class="text-muted">Risk Level</small>
+                  </div>
+                  <div class="col-md-4 text-center">
+                    <h4>
+                      {% set analysis = get_user_analysis(user.id) %} {{
+                      analysis.analysis_date[:10] if analysis else 'N/A' }}
+                    </h4>
+                    <small class="text-muted">Last Analyzed</small>
+                  </div>
+                </div>
+                {% else %}
+                <div class="text-center py-3">
+                  <p class="text-muted">No AI analysis performed yet</p>
+                  <a
+                    href="{{ url_for('run_analysis', user_id=user.id) }}"
+                    class="btn btn-primary"
+                  >
+                    <i class="fas fa-robot me-1"></i> Run AI Analysis
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="row mt-4">
+          <div class="col-12 text-center">
+            <a href="{{ url_for('all_users') }}" class="btn btn-primary">
+              <i class="fas fa-arrow-left me-1"></i> Back to All Users
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Documents Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card">
+        <div
+          class="card-header d-flex justify-content-between align-items-center bg-dark text-white"
+        >
+          <h5 class="mb-0"><i class="fas fa-file-alt me-2"></i>Documents</h5>
+          <div>
+            <a
+              href="{{ url_for('upload_documents', user_id=user.id) }}"
+              class="btn btn-success btn-sm"
+            >
+              <i class="fas fa-upload me-1"></i> Upload Documents
+            </a>
+            {% if uploaded_documents %}
+            <a
+              href="{{ url_for('download_all_documents', user_id=user.id) }}"
+              class="btn btn-info btn-sm ms-1"
+            >
+              <i class="fas fa-download me-1"></i> Download All
+            </a>
+            {% endif %}
+          </div>
+        </div>
+        <div class="card-body">
+          <!-- Document Status Summary -->
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Document Completion Status</h6>
+                  {% set required_count = document_status|length %} {% set
+                  uploaded_count = document_status.values()|select|list|length
+                  %} {% set completion_percentage = (uploaded_count /
+                  required_count * 100)|round|int %}
+
+                  <div class="progress mb-2" style="height: 20px">
+                    <div
+                      class="progress-bar bg-{{ 'success' if completion_percentage == 100 else 'warning' }}"
+                      style="width: '{{ completion_percentage }}%'"
+                    >
+                      {{ completion_percentage }}%
+                    </div>
+                  </div>
+                  <small class="text-muted">
+                    {{ uploaded_count }} of {{ required_count }} required
+                    documents uploaded
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h6 class="card-title">Quick Status</h6>
+                  <div class="row">
+                    <div class="col-6">
+                      <span class="badge bg-success me-1"
+                        ><i class="fas fa-check"></i
+                      ></span>
+                      <small>Uploaded: {{ uploaded_count }}</small>
+                    </div>
+                    <div class="col-6">
+                      <span class="badge bg-warning me-1"
+                        ><i class="fas fa-clock"></i
+                      ></span>
+                      <small
+                        >Pending: {{ required_count - uploaded_count }}</small
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Required Documents Grid -->
+          <h6>Required Documents:</h6>
+          <div class="row">
+            {% for doc_type, is_uploaded in document_status.items() %}
+            <div class="col-md-4 mb-2">
+              <div class="d-flex align-items-center">
+                <span
+                  class="badge bg-{{ 'success' if is_uploaded else 'secondary' }} me-2"
+                >
+                  <i
+                    class="fas fa-{{ 'check' if is_uploaded else 'hourglass-half' }}"
+                  ></i>
+                </span>
+                <small>{{ doc_type }}</small>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Uploaded Documents List -->
+          {% if uploaded_documents %}
+          <hr />
+          <h6>Uploaded Files:</h6>
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>File Name</th>
+                  <th>Size</th>
+                  <th>Uploaded</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for doc in uploaded_documents %}
+                <tr>
+                  <td>
+                    <i
+                      class="fas fa-file-{{ 'pdf' if doc.file_name.endswith('.pdf') else 'image' }} me-1 text-primary"
+                    ></i>
+                    {{ doc.document_type }}
+                  </td>
+                  <td>{{ doc.file_name }}</td>
+                  <td>{{ "%.1f"|format(doc.file_size / 1024 / 1024) }} MB</td>
+                  <td>{{ doc.upload_date[:10] }}</td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <a
+                        href="{{ url_for('download_document', doc_id=doc.id) }}"
+                        class="btn btn-outline-info btn-sm"
+                        title="Download"
+                      >
+                        <i class="fas fa-download"></i>
+                      </a>
+                      <a
+                        href="{{ url_for('delete_document', doc_id=doc.id) }}"
+                        class="btn btn-outline-danger btn-sm"
+                        title="Delete"
+                        onclick="return confirm('Are you sure you want to delete this document?')"
+                      >
+                        <i class="fas fa-trash"></i>
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+          <div class="text-center py-4">
+            <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No documents uploaded yet.</p>
+            <a
+              href="{{ url_for('upload_documents', user_id=user.id) }}"
+              class="btn btn-primary"
+            >
+              <i class="fas fa-upload me-1"></i> Upload Documents
+            </a>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

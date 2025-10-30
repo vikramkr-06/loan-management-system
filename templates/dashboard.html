@@ -1,0 +1,411 @@
+{% extends "base.html" %} {% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h1><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h1>
+    <p class="lead">Loan Management System Analytics</p>
+  </div>
+</div>
+
+<!-- Summary Cards -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Users</h5>
+        <h2 class="card-text">{{ analytics.total_users }}</h2>
+        <small>Registered applicants</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Complete Profiles</h5>
+        <h2 class="card-text">{{ analytics.percent_full_details }}%</h2>
+        <small>{{ analytics.users_with_full_details }} users</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Pending Documents</h5>
+        <h2 class="card-text">{{ analytics.percent_documents_pending }}%</h2>
+        <small>{{ analytics.users_with_documents_pending }} users</small>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-info mb-3">
+      <div class="card-body">
+        <h5 class="card-title">Total Loan Amount</h5>
+        <h2 class="card-text">₹{{ "%.2f"|format(total_loan_amount) }}</h2>
+        <small>Across all users</small>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Analytics Progress Section -->
+<div class="row mb-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-dark text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-chart-bar me-2"></i>Data Completeness Analytics
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <!-- Field Completeness -->
+          <div class="col-md-6 mb-4">
+            <h6>Field Completion Status</h6>
+            <div class="progress mb-2" style="height: 25px">
+              <div
+                class="progress-bar bg-success"
+                style="width: {{ analytics.percent_full_details }}%"
+              >
+                {{ analytics.percent_full_details }}%
+              </div>
+            </div>
+            <small class="text-muted">
+              {{ analytics.users_with_full_details }} of {{
+              analytics.total_users }} users have all required fields filled
+            </small>
+          </div>
+
+          <!-- Document Completeness -->
+          <div class="col-md-6 mb-4">
+            <h6>Document Completion Status</h6>
+            <div class="progress mb-2" style="height: 25px">
+              <div
+                class="progress-bar bg-{{ 'success' if (100 - analytics.percent_documents_pending) > 80 else 'warning' }}"
+                style="width: {{ 100 - analytics.percent_documents_pending }}%"
+              >
+                {{ 100 - analytics.percent_documents_pending }}%
+              </div>
+            </div>
+            <small class="text-muted">
+              {{ analytics.total_users - analytics.users_with_documents_pending
+              }} of {{ analytics.total_users }} users have all documents
+              uploaded
+            </small>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Pending Fields -->
+          <div class="col-md-6 mb-4">
+            <h6>Users with Pending Fields</h6>
+            <div class="d-flex align-items-center">
+              <div class="flex-grow-1">
+                <div class="progress mb-2" style="height: 20px">
+                  <div
+                    class="progress-bar bg-warning"
+                    style="width: {{ analytics.percent_pending_fields }}%"
+                  >
+                    {{ analytics.percent_pending_fields }}%
+                  </div>
+                </div>
+              </div>
+              <div class="ms-3">
+                <span class="badge bg-warning fs-6"
+                  >{{ analytics.users_with_pending_fields }}</span
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Co-Applicant Pending -->
+          <div class="col-md-6 mb-4">
+            <h6>Co-Applicant Details Pending</h6>
+            <div class="d-flex align-items-center">
+              <div class="flex-grow-1">
+                <div class="progress mb-2" style="height: 20px">
+                  <div
+                    class="progress-bar bg-info"
+                    style="width: {{ analytics.percent_coapplicant_pending }}%"
+                  >
+                    {{ analytics.percent_coapplicant_pending }}%
+                  </div>
+                </div>
+              </div>
+              <div class="ms-3">
+                <span class="badge bg-info fs-6"
+                  >{{ analytics.users_with_coapplicant_pending }}</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add this section after the existing analytics -->
+
+<!-- Enhanced AI Analytics Section -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div
+        class="card-header bg-dark text-white d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0">
+          <i class="fas fa-robot me-2"></i>AI Loan Eligibility Analytics
+        </h5>
+        <a href="{{ url_for('analyze_bulk') }}" class="btn btn-warning btn-sm">
+          <i class="fas fa-play me-1"></i> Analyze Pending Users
+        </a>
+      </div>
+      <div class="card-body">
+        <!-- Summary Cards -->
+        <div class="row text-center mb-4">
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3">
+              <h3 class="text-primary">{{ ai_stats.total_users }}</h3>
+              <small class="text-muted">Total Users</small>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3 bg-success text-white">
+              <h3>{{ ai_stats.eligible_users }}</h3>
+              <small>Eligible</small>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3 bg-danger text-white">
+              <h3>{{ ai_stats.not_eligible_users }}</h3>
+              <small>Not Eligible</small>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3 bg-warning text-dark">
+              <h3>{{ ai_stats.conditional_users }}</h3>
+              <small>Conditional</small>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3 bg-info text-white">
+              <h3>{{ ai_stats.pending_users }}</h3>
+              <small>Pending</small>
+            </div>
+          </div>
+          <div class="col-md-2 mb-3">
+            <div class="border rounded p-3 bg-secondary text-white">
+              <h3>{{ ai_stats.failed_users }}</h3>
+              <small>Failed</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Progress Bars -->
+        <div class="row">
+          <div class="col-md-6">
+            <h6>Eligibility Distribution</h6>
+            <div class="progress mb-2" style="height: 25px">
+              <div
+                class="progress-bar bg-success"
+                style="width: {{ (ai_stats.eligible_users / ai_stats.total_users * 100) if ai_stats.total_users > 0 else 0 }}%"
+                title="Eligible"
+              >
+                {{ (ai_stats.eligible_users / ai_stats.total_users *
+                100)|round(1) if ai_stats.total_users > 0 else 0 }}%
+              </div>
+              <div
+                class="progress-bar bg-danger"
+                style="width: {{ (ai_stats.not_eligible_users / ai_stats.total_users * 100) if ai_stats.total_users > 0 else 0 }}%"
+                title="Not Eligible"
+              >
+                {{ (ai_stats.not_eligible_users / ai_stats.total_users *
+                100)|round(1) if ai_stats.total_users > 0 else 0 }}%
+              </div>
+              <div
+                class="progress-bar bg-warning"
+                style="width: {{ (ai_stats.conditional_users / ai_stats.total_users * 100) if ai_stats.total_users > 0 else 0 }}%"
+                title="Conditional"
+              >
+                {{ (ai_stats.conditional_users / ai_stats.total_users *
+                100)|round(1) if ai_stats.total_users > 0 else 0 }}%
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <h6>Analysis Completion</h6>
+            <div class="progress mb-2" style="height: 25px">
+              <div
+                class="progress-bar bg-info"
+                style="width: {{ ((ai_stats.total_users - ai_stats.pending_users) / ai_stats.total_users * 100) if ai_stats.total_users > 0 else 0 }}%"
+                title="Analyzed"
+              >
+                {{ ((ai_stats.total_users - ai_stats.pending_users) /
+                ai_stats.total_users * 100)|round(1) if ai_stats.total_users > 0
+                else 0 }}%
+              </div>
+            </div>
+            <small class="text-muted">
+              {{ ai_stats.total_users - ai_stats.pending_users }} of {{
+              ai_stats.total_users }} users analyzed
+            </small>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="row mt-4">
+          <div class="col-md-4">
+            <div class="card bg-light">
+              <div class="card-body text-center">
+                <h4 class="text-success">
+                  {{ ((ai_stats.eligible_users / ai_stats.total_users * 100) if
+                  ai_stats.total_users > 0 else 0)|round(1) }}%
+                </h4>
+                <small class="text-muted">Overall Eligibility Rate</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-light">
+              <div class="card-body text-center">
+                <h4 class="text-info">
+                  {{ ai_stats.total_users - ai_stats.pending_users }}
+                </h4>
+                <small class="text-muted">Users Analyzed</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="card bg-light">
+              <div class="card-body text-center">
+                <h4 class="text-warning">{{ ai_stats.pending_users }}</h4>
+                <small class="text-muted">Pending Analysis</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="row">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-chart-pie me-2"></i>Quick Statistics
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-md-3 mb-3">
+            <div class="border rounded p-3">
+              <h3 class="text-success">
+                {{ analytics.users_with_full_details }}
+              </h3>
+              <small class="text-muted">Complete Profiles</small>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="border rounded p-3">
+              <h3 class="text-warning">
+                {{ analytics.users_with_pending_fields }}
+              </h3>
+              <small class="text-muted">Pending Fields</small>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="border rounded p-3">
+              <h3 class="text-danger">
+                {{ analytics.users_with_documents_pending }}
+              </h3>
+              <small class="text-muted">Pending Documents</small>
+            </div>
+          </div>
+          <div class="col-md-3 mb-3">
+            <div class="border rounded p-3">
+              <h3 class="text-info">
+                {{ analytics.users_with_coapplicant_pending }}
+              </h3>
+              <small class="text-muted">Co-Applicant Pending</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card">
+      <div class="card-header bg-success text-white">
+        <h5 class="mb-0"><i class="fas fa-rocket me-2"></i>Quick Actions</h5>
+      </div>
+      <div class="card-body text-center">
+        <a
+          href="{{ url_for('create_user') }}"
+          class="btn btn-primary btn-lg w-100 mb-3"
+        >
+          <i class="fas fa-user-plus me-2"></i>Create New User
+        </a>
+        <a
+          href="{{ url_for('all_users') }}"
+          class="btn btn-info btn-lg w-100 mb-3"
+        >
+          <i class="fas fa-users me-2"></i>View All Users
+        </a>
+        <a
+          href="{{ url_for('upload_excel') }}"
+          class="btn btn-success btn-lg w-100"
+        >
+          <i class="fas fa-file-excel me-2"></i>Bulk Upload
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- System Overview -->
+<div class="row mt-4">
+  <div class="col-12">
+    <div class="card">
+      <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0">
+          <i class="fas fa-info-circle me-2"></i>System Overview
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-4">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-database fa-2x text-primary me-3"></i>
+              <div>
+                <h6 class="mb-0">Data Storage</h6>
+                <small class="text-muted">SQLite Database</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
+              <div>
+                <h6 class="mb-0">Document Management</h6>
+                <small class="text-muted">PDF, JPG, PNG Support</small>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-center mb-3">
+              <i class="fas fa-chart-line fa-2x text-success me-3"></i>
+              <div>
+                <h6 class="mb-0">Analytics</h6>
+                <small class="text-muted">Real-time Insights</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

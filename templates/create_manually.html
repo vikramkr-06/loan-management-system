@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3>Create User - Manual Entry</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" id="userForm">
+                    <!-- Applicant Details Section -->
+                    <div class="section-card mb-4">
+                        <h4 class="section-title">Applicant Details</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Applicant Name *</label>
+                                <input type="text" class="form-control" name="applicant_name" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Applicant Spouse Name</label>
+                                <input type="text" class="form-control" name="applicant_spouse_name">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Applicant Mother Name</label>
+                                <input type="text" class="form-control" name="applicant_mother_name">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Current Address</label>
+                                <textarea class="form-control" name="current_address" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Mobile No.</label>
+                                <input type="text" class="form-control" name="mobile_no">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Email ID *</label>
+                                <input type="email" class="form-control" name="email_id" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Children</label>
+                                <input type="text" class="form-control" name="children" placeholder="e.g., 2">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Qualification</label>
+                                <input type="text" class="form-control" name="qualification">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Office Address</label>
+                                <textarea class="form-control" name="office_address" rows="2"></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Office Landline No.</label>
+                                <input type="text" class="form-control" name="office_landline">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Official Email ID</label>
+                                <input type="email" class="form-control" name="official_email_id">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Job Since</label>
+                                <input type="text" class="form-control" name="job_since" placeholder="e.g., 2015">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Total Experience</label>
+                                <input type="text" class="form-control" name="total_experience" placeholder="e.g., 8 years">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Department</label>
+                                <input type="text" class="form-control" name="department">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Designation</label>
+                                <input type="text" class="form-control" name="designation">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Loan Details Section -->
+                    <div class="section-card mb-4">
+                        <h4 class="section-title">Loan Details</h4>
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Loan Amount (₹) *</label>
+                                <input type="number" step="0.01" class="form-control" name="loan_amount" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Term/Tenure (months) *</label>
+                                <input type="number" class="form-control" name="tenure" required>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Investment Details</label>
+                                <input type="text" class="form-control" name="investment_details">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Property Details Section -->
+                    <div class="section-card mb-4">
+                        <h4 class="section-title">Property Details</h4>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Property Address</label>
+                                <textarea class="form-control" name="property_address" rows="3"></textarea>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Type</label>
+                                <select class="form-control" name="property_type">
+                                    <option value="">Select Type</option>
+                                    <option value="Builder Purchase">Builder Purchase</option>
+                                    <option value="Resale">Resale</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Property Pincode</label>
+                                <input type="text" class="form-control" name="property_pincode">
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Property Carpet Area</label>
+                                <input type="text" class="form-control" name="property_carpet_area" placeholder="e.g., 1200 sq ft">
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">Sale Deed Amount (₹)</label>
+                                <input type="number" step="0.01" class="form-control" name="sale_deed_amount">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- References Section -->
+                    <div class="section-card mb-4">
+                        <h4 class="section-title">References</h4>
+                        
+                        <h6>Reference 1</h6>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="ref1_name">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Mobile Number</label>
+                                <input type="text" class="form-control" name="ref1_mobile">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Email ID</label>
+                                <input type="email" class="form-control" name="ref1_email">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-control" name="ref1_address">
+                            </div>
+                        </div>
+                        
+                        <h6>Reference 2</h6>
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control" name="ref2_name">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Mobile Number</label>
+                                <input type="text" class="form-control" name="ref2_mobile">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Email ID</label>
+                                <input type="email" class="form-control" name="ref2_email">
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label class="form-label">Address</label>
+                                <input type="text" class="form-control" name="ref2_address">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Co-Applicant Section -->
+                    <div class="section-card mb-4">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="hasCoApplicant" name="has_co_applicant">
+                            <label class="form-check-label" for="hasCoApplicant">
+                                Considering Co-Applicant Income
+                            </label>
+                        </div>
+                        
+                        <div id="coApplicantSection" style="display: none;">
+                            <h4 class="section-title">Co-Applicant Details</h4>
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Co-Applicant Name</label>
+                                    <input type="text" class="form-control" name="co_applicant_name">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Co-Applicant Spouse Name</label>
+                                    <input type="text" class="form-control" name="co_applicant_spouse_name">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Co-Applicant Mother Name</label>
+                                    <input type="text" class="form-control" name="co_applicant_mother_name">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Mobile Number</label>
+                                    <input type="text" class="form-control" name="co_applicant_mobile">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Current Address</label>
+                                    <input type="text" class="form-control" name="co_applicant_address">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Email ID</label>
+                                    <input type="email" class="form-control" name="co_applicant_email">
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label">Qualification</label>
+                                    <input type="text" class="form-control" name="co_applicant_qualification">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                            <a href="{{ url_for('create_user') }}" class="btn btn-secondary">Back</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('hasCoApplicant').addEventListener('change', function() {
+    const coApplicantSection = document.getElementById('coApplicantSection');
+    if (this.checked) {
+        coApplicantSection.style.display = 'block';
+    } else {
+        coApplicantSection.style.display = 'none';
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3><i class="fas fa-file-upload me-2"></i>Upload Documents - {{ user.applicant_name }}</h3>
+                <div>
+                    <a href="{{ url_for('view_user', user_id=user.id) }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to User Details
+                    </a>
+                </div>
+            </div>
+            <div class="card-body">
+                <!-- Document Status Overview -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="fas fa-clipboard-check me-2"></i>Document Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    {% for doc_type, is_uploaded in document_status.items() %}
+                                    <div class="col-md-4 mb-2">
+                                        <span class="badge bg-{{ 'success' if is_uploaded else 'warning' }} me-2">
+                                            <i class="fas fa-{{ 'check' if is_uploaded else 'clock' }}"></i>
+                                        </span>
+                                        {{ doc_type }}
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Form -->
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload New Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" enctype="multipart/form-data" id="uploadForm">
+                                    <div class="alert alert-info">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Allowed file types: PDF, JPG, JPEG, PNG (Max 5MB per file)
+                                    </div>
+
+                                    <!-- Dynamic document upload fields -->
+                                    <div id="documentFields">
+                                        <div class="document-field mb-3 border-bottom pb-3">
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    <label class="form-label fw-bold">Document Type</label>
+                                                    <select class="form-select" name="document_types" required>
+                                                        <option value="">Select Document Type</option>
+                                                        <option value="Aadhar Card">Aadhar Card</option>
+                                                        <option value="PAN Card">PAN Card</option>
+                                                        <option value="Salary Slip 1">Salary Slip 1 (Latest)</option>
+                                                        <option value="Salary Slip 2">Salary Slip 2</option>
+                                                        <option value="Salary Slip 3">Salary Slip 3</option>
+                                                        <option value="Form 16 Part A">Form 16 Part A</option>
+                                                        <option value="Form 16 Part B">Form 16 Part B</option>
+                                                        <option value="Bank Statement 1">Bank Statement 1 (Latest)</option>
+                                                        <option value="Bank Statement 2">Bank Statement 2</option>
+                                                        <option value="Bank Statement 3">Bank Statement 3</option>
+                                                        <option value="Bank Statement 4">Bank Statement 4</option>
+                                                        <option value="Bank Statement 5">Bank Statement 5</option>
+                                                        <option value="Bank Statement 6">Bank Statement 6</option>
+                                                        <option value="Appointment Letter">Appointment Letter</option>
+                                                        <option value="Resume">Resume</option>
+                                                        <option value="Co-Applicant Aadhar Card">Co-Applicant Aadhar Card</option>
+                                                        <option value="Co-Applicant PAN Card">Co-Applicant PAN Card</option>
+                                                        <option value="Other">Other Document</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-md-5">
+                                                    <label class="form-label fw-bold">Select File</label>
+                                                    <input type="file" class="form-control" name="documents" accept=".pdf,.jpg,.jpeg,.png" required>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <label class="form-label fw-bold">&nbsp;</label>
+                                                    <button type="button" class="btn btn-danger btn-sm w-100 remove-field" style="display: none;">
+                                                        <i class="fas fa-times"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row mt-3">
+                                        <div class="col-12">
+                                            <button type="button" id="addMore" class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-plus me-1"></i> Add Another Document
+                                            </button>
+                                            <button type="submit" class="btn btn-success float-end">
+                                                <i class="fas fa-upload me-1"></i> Upload Documents
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Required Documents Info -->
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0"><i class="fas fa-list-check me-2"></i>Required Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <h6>Mandatory for all applicants:</h6>
+                                <ul class="small">
+                                    <li>Aadhar Card</li>
+                                    <li>PAN Card</li>
+                                    <li>Last 3 months salary slips</li>
+                                    <li>Form 16 (Part A & B)</li>
+                                    <li>Last 6 months bank statements</li>
+                                </ul>
+                                
+                                {% if 'Appointment Letter' in required_documents %}
+                                <h6>Additional documents (Job tenure < 3 years):</h6>
+                                <ul class="small">
+                                    <li>Appointment Letter</li>
+                                    <li>Resume</li>
+                                </ul>
+                                {% endif %}
+                                
+                                {% if user.has_co_applicant %}
+                                <h6>Co-Applicant documents:</h6>
+                                <ul class="small">
+                                    <li>Co-Applicant Aadhar Card</li>
+                                    <li>Co-Applicant PAN Card</li>
+                                </ul>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Existing Documents -->
+                {% if uploaded_documents %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5 class="mb-0"><i class="fas fa-files me-2"></i>Uploaded Documents</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>Document Type</th>
+                                                <th>File Name</th>
+                                                <th>File Size</th>
+                                                <th>Upload Date</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for doc in uploaded_documents %}
+                                            <tr>
+                                                <td>
+                                                    <i class="fas fa-file-{{ 'pdf' if doc.file_name.endswith('.pdf') else 'image' }} me-2 text-primary"></i>
+                                                    {{ doc.document_type }}
+                                                </td>
+                                                <td>{{ doc.file_name }}</td>
+                                                <td>{{ "%.1f"|format(doc.file_size / 1024 / 1024) }} MB</td>
+                                                <td>{{ doc.upload_date[:16] }}</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ url_for('download_document', doc_id=doc.id) }}" 
+                                                           class="btn btn-info" title="Download">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                        <a href="{{ url_for('delete_document', doc_id=doc.id) }}" 
+                                                           class="btn btn-danger" 
+                                                           title="Delete"
+                                                           onclick="return confirm('Are you sure you want to delete this document?')">
+                                                            <i class="fas fa-trash"></i>
+                                                        </a>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const documentFields = document.getElementById('documentFields');
+    const addMoreBtn = document.getElementById('addMore');
+    
+    addMoreBtn.addEventListener('click', function() {
+        const newField = documentFields.firstElementChild.cloneNode(true);
+        const fileInput = newField.querySelector('input[type="file"]');
+        const selectInput = newField.querySelector('select');
+        const removeBtn = newField.querySelector('.remove-field');
+        
+        // Clear values
+        fileInput.value = '';
+        selectInput.selectedIndex = 0;
+        
+        // Show remove button
+        removeBtn.style.display = 'block';
+        
+        // Add remove functionality
+        removeBtn.addEventListener('click', function() {
+            newField.remove();
+        });
+        
+        documentFields.appendChild(newField);
+    });
+    
+    // Add remove functionality to initial remove buttons (though they're hidden)
+    document.querySelectorAll('.remove-field').forEach(btn => {
+        btn.addEventListener('click', function() {
+            this.closest('.document-field').remove();
+        });
+    });
+    
+    // File size validation
+    document.getElementById('uploadForm').addEventListener('submit', function(e) {
+        const fileInputs = this.querySelectorAll('input[type="file"]');
+        let valid = true;
+        
+        fileInputs.forEach(input => {
+            if (input.files.length > 0) {
+                const fileSize = input.files[0].size / 1024 / 1024; // MB
+                if (fileSize > 5) {
+                    alert(`File ${input.files[0].name} is too large! Maximum size is 5MB.`);
+                    valid = false;
+                }
+            }
+        });
+        
+        if (!valid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+{% endblock %}
